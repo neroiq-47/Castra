@@ -207,49 +207,36 @@
     $all('input[name="payment"]', form).forEach(function (r) { r.addEventListener('change', refresh); });
     refresh();
 
-    // Card checkout via Paddle overlay, only when configured in /config.js.
-    var cfg = (window.CASTRA_CONFIG && window.CASTRA_CONFIG.paddle) || {};
-    var ready = cfg.clientToken && cfg.prices && cfg.prices['30'] && cfg.prices['90'] && cfg.prices['365'];
+    // Card checkout via Stripe Payment Links, only when all three are set in /config.js.
+    var cfg = (window.CASTRA_CONFIG && window.CASTRA_CONFIG.stripe) || {};
+    var links = cfg.paymentLinks || {};
+    var isLink = function (u) { return /^https:\/\/(buy\.stripe\.com|checkout\.stripe\.com)\//.test(u || ''); };
+    var ready = isLink(links['30']) && isLink(links['90']) && isLink(links['365']);
     if (!cardBtn) return;
     if (!ready) {
       cardBtn.classList.add('hidden');
       if (cardNote) cardNote.classList.remove('hidden');
       return;
     }
-    var loaded = null;
-    function loadPaddle() {
-      if (loaded) return loaded;
-      loaded = new Promise(function (resolve, reject) {
-        var el = document.createElement('script');
-        el.src = 'https://cdn.paddle.com/paddle/v2/paddle.js';
-        el.onload = function () {
-          try {
-            if (cfg.environment === 'sandbox') window.Paddle.Environment.set('sandbox');
-            window.Paddle.Initialize({ token: cfg.clientToken });
-            resolve(window.Paddle);
-          } catch (err) { reject(err); }
-        };
-        el.onerror = function () { loaded = null; reject(new Error('Paddle failed to load')); };
-        document.head.appendChild(el);
-      });
-      return loaded;
-    }
     cardBtn.addEventListener('click', function () {
-      var email = ($('#email', form) || {}).value || undefined;
+      // Card buyers still fill in the form, so we know which company a payment belongs to.
+      if (!form.reportValidity()) return;
+      var data = new FormData(form);
+      data.set('payment', 'card');
+      var ref = 'castra-' + termSel.value + 'd-' + Date.now().toString(36);
+      data.set('notes', (data.get('notes') || '') + '\n[stripe ref ' + ref + ']');
+      var url = new URL(links[termSel.value]);
+      var email = String(data.get('email') || '');
+      if (email) url.searchParams.set('prefilled_email', email);
+      url.searchParams.set('client_reference_id', ref);
       cardBtn.setAttribute('aria-busy', 'true');
-      loadPaddle().then(function (Paddle) {
-        Paddle.Checkout.open({
-          items: [{ priceId: cfg.prices[termSel.value], quantity: 1 }],
-          customer: email ? { email: email } : undefined,
-          customData: { term_days: termSel.value, services: svc ? svc.value : '' },
-          settings: { successUrl: window.location.origin + '/thanks?paid=1' }
-        });
-      }).catch(function () {
-        if (cardNote) {
-          cardNote.textContent = 'Card checkout could not load. Send the form below and we will email a payment link.';
-          cardNote.classList.remove('hidden');
-        }
-      }).then(function () { cardBtn.removeAttribute('aria-busy'); });
+      cardBtn.disabled = true;
+      fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(data).toString()
+      }).catch(function () { /* the payment still matters more than the record */ })
+        .then(function () { window.location.assign(url.toString()); });
     });
   }
 
