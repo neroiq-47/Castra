@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#14110F">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&amp;family=Archivo:wght@400;500;600;700&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/styles.css">
+<title>Enlist — Castra</title>
+<meta name="description" content="Choose a Castra term and pay by card, invoice or purchase order.">
+<script src="/main.js" defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header">
+  <nav class="nav wrap" aria-label="Main">
+    <a class="brand" href="/" aria-label="Castra home">
+      <svg width="30" height="36" viewBox="0 0 34 40" fill="none" aria-hidden="true"><path d="M3 4 Q17 -1 31 4 L31 30 Q17 41 3 30 Z" stroke="#C9A24A" stroke-width="2"/><path d="M17 7 L17 33" stroke="#C9A24A" stroke-width="1.5"/><path d="M8 19 L26 19" stroke="#C9A24A" stroke-width="1.5"/><circle cx="17" cy="19" r="4" fill="#9E1B14" stroke="#C9A24A" stroke-width="1.5"/></svg>
+      <span class="brand-word">CASTRA</span>
+    </a>
+    <div class="nav-actions">
+      <a class="nav-link" href="/#pricing" style="padding:12px 10px;font-size:15px">Pricing</a>
+      <a class="nav-link" href="/contact" style="padding:12px 10px;font-size:15px">Contact</a>
+    </div>
+  </nav>
+</header>
+
+<main id="main">
+  <section class="section wrap page">
+    <div class="head">
+      <div class="eyebrow">ENLIST</div>
+      <h1 class="h2">Start your term.</h1>
+      <p class="lede">One payment, a fixed end date, no auto-renewal. Pay by card in about a minute, or ask for an invoice with your PO number and 30-day terms.</p>
+    </div>
+
+    <div class="card">
+      <form class="form" name="enlist" method="POST" action="/thanks" data-netlify="true" netlify-honeypot="bot-field">
+        <input type="hidden" name="form-name" value="enlist">
+        <input type="hidden" name="subject" value="New enlistment from %{siteName} (%{submissionId})">
+        <p class="hidden"><label>Leave this empty <input name="bot-field" tabindex="-1" autocomplete="off"></label></p>
+
+        <div class="term-summary">
+          <span class="rec-name" style="font-size:clamp(24px,3vw,32px)" data-sum="name">Cohort · 90 days</span>
+          <span class="rec-meta" data-sum="price">£1,190 excl. VAT</span>
+        </div>
+
+        <div class="two">
+          <label for="term">Term
+            <select id="term" name="term" required>
+              <option value="30">Contubernium · 30 days · £490</option>
+              <option value="90" selected>Cohort · 90 days · £1,190</option>
+              <option value="365">Legion · 365 days · £3,490</option>
+            </select>
+          </label>
+          <label for="services">Services to monitor (estimate)
+            <input id="services" name="services" type="number" inputmode="numeric" min="1" max="100000" step="1" value="120">
+          </label>
+        </div>
+
+        <div class="two">
+          <label for="name">Your name
+            <input id="name" name="name" type="text" autocomplete="name" required>
+          </label>
+          <label for="email">Work email
+            <input id="email" name="email" type="email" autocomplete="email" required>
+          </label>
+        </div>
+        <div class="two">
+          <label for="company">Company
+            <input id="company" name="company" type="text" autocomplete="organization" required>
+          </label>
+          <label for="vat">VAT number <span class="hint">(optional)</span>
+            <input id="vat" name="vat" type="text" autocomplete="off">
+          </label>
+        </div>
+
+        <fieldset>
+          <legend>How would you like to pay?</legend>
+          <label class="radio"><input type="radio" name="payment" value="card" checked> Card or wallet</label>
+          <label class="radio"><input type="radio" name="payment" value="invoice"> Invoice, bank transfer or purchase order</label>
+        </fieldset>
+
+        <div class="two hidden" data-po-fields>
+          <label for="po">PO number <span class="hint">(if you have one)</span>
+            <input id="po" name="po" type="text" autocomplete="off">
+          </label>
+          <label for="billing">Billing email <span class="hint">(if different)</span>
+            <input id="billing" name="billing_email" type="email" autocomplete="off">
+          </label>
+        </div>
+
+        <label for="notes">Anything we should know? <span class="hint">(optional)</span>
+          <textarea id="notes" name="notes" rows="4"></textarea>
+        </label>
+
+        <button type="button" class="btn btn-primary btn-block" data-card-checkout>Pay by card now</button>
+        <p class="hint hidden" data-card-note>Card checkout opens at public launch. Send this form and we will reply within one business day with a secure payment link or your invoice. Nothing is charged until you confirm.</p>
+        <button type="submit" class="btn btn-ghost btn-block">Send enlistment request</button>
+        <p class="hint">Prices exclude VAT. Terms never renew by themselves. Contubernium is refundable in full within 14 days. We use these details only to set up your term and reply to you; see our <a href="/legal#privacy">privacy notice</a>.</p>
+      </form>
+    </div>
+  </section>
+</main>
+<script src="/config.js"></script>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <div class="footer-base" style="border-top:0;padding-top:0">
+      <span>© MMXXVI Castra Ltd. · London</span>
+      <span><a class="nav-link" href="/legal#terms">Terms</a> · <a class="nav-link" href="/legal#privacy">Privacy</a> · <a class="nav-link" href="/legal#dpa">DPA</a> · <a class="nav-link" href="/legal#cookies">Cookies</a></span>
+    </div>
+  </div>
+</footer>
+</body>
+</html>
