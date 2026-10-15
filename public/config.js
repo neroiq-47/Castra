@@ -1,10 +1,13 @@
-/* Castra public runtime config. Values here are public (client-side) only.
- * Fill in Paddle's client-side token and the three one-time price IDs to turn on
- * card checkout on /enlist. Until then the page offers the invoice/request form. */
+/* Castra public runtime config. Everything here is public (client-side).
+ * Paste the three Stripe Payment Link URLs (https://buy.stripe.com/...) to turn on
+ * card checkout on /enlist. Until all three are set, the page offers the
+ * invoice/request form only. */
 window.CASTRA_CONFIG = {
-  paddle: {
-    environment: 'production', // or 'sandbox'
-    clientToken: '',           // e.g. live_xxx or test_xxx
-    prices: { '30': '', '90': '', '365': '' } // pri_xxx IDs for Contubernium, Cohort, Legion
+  stripe: {
+    paymentLinks: {
+      '30': '',  // Contubernium · £490
+      '90': '',  // Cohort · £1,190
+      '365': ''  // Legion · £3,490
+    }
   }
 };
